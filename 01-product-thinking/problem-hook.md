@@ -1,53 +1,19 @@
-# Problem Hook & Value Proposition: [StreamLine / RouteLogic / your initiative]
+# Problem Hook & Value Proposition (Module 1)
 
-> **Module 1 · ★ Deliverable 1.** Repo file `01-product-thinking/problem-hook.md` — part of your submission.
-> Do the lab in the **Module 1 · Exercise 2 Guide** (linked from the Module 1 deck), then click **⬇ Download .md** — it saves as this exact file. Commit it here.
-> It becomes the **Problem, Value & Hypothesis** slide of your Module 6 final deck. (Your Module 1 · Exercise 1 discovery map lands in `strategic-map.md`.)
+## Responses
+- **Chosen path, which scenario are you committing to? (StreamLine or RouteLogic, or your own):** My own based on the shared brief
+- **Strategic crisis, based on the brief, if the company does nothing for 12 months, what happens to its market position?:** Limits our expansion and surely lock us in as a checkout option only, not usable across the checkouts. So it will kepp our positioning the same or lower.
+- **Moment of misery, what is the user likely doing outside the product (Google, spreadsheets, a competitor) because your tool isn’t serving them?:** Going to competitor or abandoning the purchase
+- **Problem hook, summarize the business risk and user pain into one urgent sentence.:** Riverty's users like Lena juggle several BNPL apps and pay at the till with someone else's card, while Klarna and PayPal grow into the stores and checkouts Riverty can't reach, and with a brand preference of only 6%, every month without a card moves Riverty closer to being a replaceable checkout button.
+- **Value proposition, based on the proposed initiative (Spotlight or Velocity), what is the new value and why is it urgent to launch now?:** Value proposition: For busy BNPL users like Lena, who want money to leave their account only after they've decided to keep what they bought, the Riverty card lets them pay later anywhere, in stores and online, with one clear view of what's due. Unlike Klarna's debit-first card or PayPal's separate instalment products, it keeps the "decide first, pay after" habit in every setting and sends users back to Riverty's partner merchants instead of away from them.
+New value: Riverty moves from a checkout option Lena doesn't prefer to an everyday card she carries. That closes the in-store and heavy-user gaps from the brief and gives Riverty a direct consumer relationship for the first time.
+Why now:
+Klarna's card base is growing, and PayPal now offers instalments at Amazon.de and a virtual card for in-store payments, so Lena's habits are being set by competitors.
+From 20 November 2026, most BNPL falls under consumer credit rules, and Riverty carries that compliance cost with or without a card.
+Riverty's banking licence and Mastercard platform are already in place, and a consumer card is the next product that can earn that investment.
+The merchant benefit is a hypothesis, not something the brief establishes, so it should be one of the first things tested in discovery.
 
-## 1. Chosen scenario
-
-**Path:** _StreamLine Spotlight (B2C) · RouteLogic Velocity (B2B) · my own initiative_
-
-_One line on why you picked it._
-
-## 2. The strategic crisis
-
-_The big-picture business risk. If the company does nothing for 12 months, what happens to its market position?_
-
-> If we do nothing for 12 months, the company will…
-
-## 3. The moment of misery
-
-_The specific point where the product fails the user, forcing a manual workaround (Google, spreadsheets, group texts, a competitor)._
-
-> The user is currently forced to…
-
-## 4. Problem hook
-
-_One urgent sentence fusing the business risk and the user pain, your pitch for why this is the most important thing to work on right now._
-
-> We must solve [business risk] by addressing [user pain]…
-
-## 5. Value proposition
-
-_Who it's for, the new value, and why it's urgent to launch now._
-
-> For **[who]**, we will **[value]** because **[urgent why]**.
-
-## 6. Cold-read self-review
-
-_Read your hook back as a skeptical stakeholder. If you don't feel the urgency, that's your data._
-
-| Question | Your answer |
-|---|---|
-| Is the business risk high-stakes enough to justify a new initiative? | _____ |
-| Is the moment of misery systemic, or just an edge case? | _____ |
-| Does the value proposition actually remove the obstacle? | _____ |
-
-## 7. Finalized hypothesis _(complete in Module 3)_
-
-> Based on [qual + quant evidence], I believe that [solving X] for [persona] will result in [outcome], as measured by a [X%] change in [success metric]. I will protect [guardrail metric] and make a go/no-go decision after [decision window].
-
-## Link to full artifact
-
-_[link to your Problem Hook Builder export]_
+## Cold-read your own hook
+- **Is the business risk high enough to justify a new initiative, a high-stakes threat, or a minor inconvenience?:** It is high enough to justify
+- **Is the moment of misery a systemic problem or just an edge case?:** Systematic that appears all over
+- **Does the value proposition actually remove the obstacle you identified, or is it a generic feature?:** yes
