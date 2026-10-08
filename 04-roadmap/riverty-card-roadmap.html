@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Riverty card · Roadmap</title>
+<style>
+  :root {
+    --bg: #f2f1ee;
+    --surface: #ffffff;
+    --ink: #262626;
+    --ink-soft: #5b5b57;
+    --line: #dcdad4;
+    --green: #4d7a3e;
+    --green-deep: #34562a;
+    --lane-now: #4d7a3e;
+    --lane-next: #2f6f7a;
+    --lane-later: #8a7a3a;
+    --q-quick: #2f6b2a;
+    --q-quick-bg: #e3efdc;
+    --q-major: #1f5a8c;
+    --q-major-bg: #dde9f4;
+    --q-fill: #7a5a00;
+    --q-fill-bg: #f6ebc8;
+    --q-sink: #9a3320;
+    --q-sink-bg: #f6dfd9;
+    --radius: 6px;
+    --font: "Avenir Next", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1b;
+      --surface: #272726;
+      --ink: #efeeea;
+      --ink-soft: #b0aea6;
+      --line: #3d3d3a;
+      --green: #8fbf7b;
+      --green-deep: #8fbf7b;
+      --lane-now: #8fbf7b;
+      --lane-next: #7cc0cc;
+      --lane-later: #d3bf72;
+      --q-quick: #a9d79a;
+      --q-quick-bg: #26361f;
+      --q-major: #9cc6ee;
+      --q-major-bg: #1f3144;
+      --q-fill: #e8cf80;
+      --q-fill-bg: #403512;
+      --q-sink: #f0a898;
+      --q-sink-bg: #432019;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--bg); }
+  body {
+    margin: 0;
+    font-family: var(--font);
+    color: var(--ink);
+    background: var(--bg);
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1320px; margin: 0 auto; padding: 28px 24px 64px; }
+
+  /* Header */
+  header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; padding-bottom: 20px; border-bottom: 2px solid var(--ink); }
+  .brand { display: flex; align-items: center; gap: 14px; }
+  .mark { width: 34px; height: 34px; flex: none; }
+  h1 { margin: 0; font-size: 1.9rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; }
+  .sub { margin: 4px 0 0; color: var(--ink-soft); font-size: 0.95rem; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  button, select { font: inherit; color: inherit; }
+  .btn {
+    background: transparent; border: 1px solid var(--ink); border-radius: var(--radius);
+    padding: 7px 14px; font-size: 0.88rem; cursor: pointer; font-weight: 600;
+  }
+  .btn:hover { background: var(--ink); color: var(--bg); }
+  :focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
+
+  .note {
+    margin: 16px 0 0; padding: 10px 14px; border-left: 4px solid var(--green);
+    background: var(--surface); font-size: 0.9rem; color: var(--ink-soft);
+    display: flex; justify-content: space-between; gap: 12px; align-items: flex-start;
+  }
+  .note button { background: none; border: 0; cursor: pointer; font-size: 1.1rem; line-height: 1; color: var(--ink-soft); padding: 0 4px; }
+
+  /* Filters */
+  .filters { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 20px 0 22px; }
+  .filters .lbl { font-size: 0.88rem; color: var(--ink-soft); margin-right: 4px; }
+  .chip {
+    border: 1px solid var(--line); background: var(--surface); border-radius: 999px;
+    padding: 5px 12px; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 7px;
+  }
+  .chip[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); font-weight: 600; }
+  .chip .sw { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+
+  /* Lanes */
+  .board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: start; }
+  .lane { background: transparent; min-width: 0; }
+  .lane-head { border-top: 5px solid var(--lc); padding: 10px 0 12px; display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .lane-head h2 { margin: 0; font-size: 1.25rem; letter-spacing: 0.01em; }
+  .lane-head .when { color: var(--ink-soft); font-size: 0.85rem; }
+  .count { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--lc); font-size: 1.05rem; }
+  .dropzone { min-height: 120px; display: flex; flex-direction: column; gap: 12px; padding: 4px; border-radius: var(--radius); transition: background 0.12s; }
+  .dropzone.over { background: color-mix(in srgb, var(--lc, var(--ink)) 12%, transparent); outline: 2px dashed var(--lc, var(--ink)); }
+  .empty { border: 1px dashed var(--line); border-radius: var(--radius); padding: 18px; color: var(--ink-soft); font-size: 0.88rem; text-align: center; }
+
+  /* Cards */
+  .card {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 14px 14px 12px; cursor: grab; transition: opacity 0.15s;
+  }
+  .card.dragging { opacity: 0.4; }
+  .card.dim { opacity: 0.28; }
+  .card h3 { margin: 0 0 8px; font-size: 1rem; line-height: 1.3; }
+  .card p { margin: 0 0 12px; font-size: 0.88rem; color: var(--ink-soft); }
+  .card-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; font-weight: 700;
+    padding: 3px 9px; border-radius: 4px; color: var(--bc); background: var(--bb);
+  }
+  .badge svg { width: 10px; height: 10px; flex: none; }
+  .scores { font-size: 0.78rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; margin-left: 8px; }
+  .move { border: 1px solid var(--line); background: var(--bg); border-radius: 4px; padding: 3px 6px; font-size: 0.8rem; cursor: pointer; }
+
+  .q-quick { --bc: var(--q-quick); --bb: var(--q-quick-bg); }
+  .q-major { --bc: var(--q-major); --bb: var(--q-major-bg); }
+  .q-fill  { --bc: var(--q-fill);  --bb: var(--q-fill-bg); }
+  .q-sink  { --bc: var(--q-sink);  --bb: var(--q-sink-bg); }
+
+  /* Cut list */
+  .cut { margin-top: 44px; --lc: var(--q-sink); }
+  .cut .lane-head { border-top-color: var(--ink); }
+  .cut .dropzone { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .cut .card { background: transparent; border-style: dashed; }
+  .cut .card h3 { color: var(--ink-soft); }
+  .cut .empty { grid-column: 1 / -1; }
+
+  .legend { margin-top: 34px; font-size: 0.82rem; color: var(--ink-soft); max-width: 90ch; }
+
+  @media (max-width: 900px) { .board { grid-template-columns: 1fr; } .wrap { padding: 20px 14px 48px; } h1 { font-size: 1.5rem; } }
+  @media print { .actions, .filters, .move, .note { display: none; } .card { break-inside: avoid; } }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 34 34" aria-hidden="true"><path d="M2 2h30v8H10v22H2z" fill="var(--green)"/></svg>
+      <div>
+        <h1>Riverty card</h1>
+        <p class="sub">Pilot roadmap · Team of 4 · 10-week window</p>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="copy">Copy as text</button>
+      <button class="btn" id="reset">Reset board</button>
+    </div>
+  </header>
+
+  <div class="note" id="note" role="note">
+    <span>Your finalized lists were empty, so this board is pre-filled from the Effort vs. Value scoring. Drag cards between lanes, or use each card's “Move to” menu. Changes last until you close the page.</span>
+    <button id="closeNote" aria-label="Dismiss note">×</button>
+  </div>
+
+  <div class="filters" role="group" aria-label="Highlight by quadrant">
+    <span class="lbl">Highlight</span>
+    <button class="chip" data-q="all" aria-pressed="true">All</button>
+    <button class="chip" data-q="quick" aria-pressed="false"><span class="sw" style="background:var(--q-quick)"></span>Quick Win</button>
+    <button class="chip" data-q="major" aria-pressed="false"><span class="sw" style="background:var(--q-major)"></span>Major Project</button>
+    <button class="chip" data-q="fill" aria-pressed="false"><span class="sw" style="background:var(--q-fill)"></span>Fill-In</button>
+    <button class="chip" data-q="sink" aria-pressed="false"><span class="sw" style="background:var(--q-sink)"></span>Time Sinker</button>
+  </div>
+
+  <main>
+    <section class="board" aria-label="Roadmap lanes">
+      <div class="lane" style="--lc: var(--lane-now)">
+        <div class="lane-head"><div><h2>NOW</h2><div class="when">2-week sprint</div></div><span class="count" id="count-now">0</span></div>
+        <div class="dropzone" id="lane-now" data-lane="now"></div>
+      </div>
+      <div class="lane" style="--lc: var(--lane-next)">
+        <div class="lane-head"><div><h2>NEXT</h2><div class="when">Following 1–2 sprints</div></div><span class="count" id="count-next">0</span></div>
+        <div class="dropzone" id="lane-next" data-lane="next"></div>
+      </div>
+      <div class="lane" style="--lc: var(--lane-later)">
+        <div class="lane-head"><div><h2>LATER</h2><div class="when">Backlog</div></div><span class="count" id="count-later">0</span></div>
+        <div class="dropzone" id="lane-later" data-lane="later"></div>
+      </div>
+    </section>
+
+    <section class="lane cut" aria-label="Cut list">
+      <div class="lane-head"><div><h2>Cut List</h2><div class="when">Not in this pilot. Drag a card back to a lane to reinstate it.</div></div><span class="count" id="count-cut" style="color:var(--ink)">0</span></div>
+      <div class="dropzone" id="lane-cut" data-lane="cut"></div>
+    </section>
+  </main>
+
+  <p class="legend">Value: 5 directly moves the weekly overview rate and removes a step in the month-end reconciliation. Effort: 1 is under one person-week, 5 is twelve or more person-weeks or depends on an external party. Quick Win = value 4–5, effort 1–3. Major Project = value 4–5, effort 4–5. Fill-In = value 1–3, effort 1–3. Time Sinker = value 1–3, effort 4–5. Effort figures are estimates to confirm with your tech lead.</p>
+</div>
+
+<script>
+(function () {
+  var QUADS = {
+    quick: { label: "Quick Win",    icon: '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 0l1.4 3.6L10 5 6.4 6.4 5 10 3.6 6.4 0 5l3.6-1.4z" fill="currentColor"/></svg>' },
+    major: { label: "Major Project", icon: '<svg viewBox="0 0 10 10" aria-hidden="true"><rect x="0" y="0" width="10" height="10" fill="currentColor"/></svg>' },
+    fill:  { label: "Fill-In",       icon: '<svg viewBox="0 0 10 10" aria-hidden="true"><circle cx="5" cy="5" r="5" fill="currentColor"/></svg>' },
+    sink:  { label: "Time Sinker",   icon: '<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 10L0 0h10z" fill="currentColor"/></svg>' }
+  };
+  var LANES = { now: "NOW", next: "NEXT", later: "LATER", cut: "Cut List" };
+
+  var FEATURES = [
+    // NOW
+    { id: 3,  name: "Card overview MVP", v: 5, e: 2, q: "quick", lane: "now",
+      why: "This is the surface the weekly overview rate is measured on, so nothing else matters without it." },
+    { id: 1,  name: "Real-time transaction feed", v: 5, e: 3, q: "quick", lane: "now",
+      why: "It removes the “up to 24 hours” delay that sends her to other apps at month-end." },
+    { id: 5,  name: "Merchant name and logo cleanup", v: 4, e: 2, q: "quick", lane: "now",
+      why: "It fixes “processor name instead of the merchant”, which stops her trusting the overview enough to quit cross-checking." },
+    // NEXT
+    { id: 2,  name: "Unified due-date view", v: 5, e: 3, q: "quick", lane: "next",
+      why: "It fixes “due dates sit on two screens”, the step that leads to the reminder fee." },
+    { id: 4,  name: "Pre-due-date push reminders", v: 4, e: 2, q: "quick", lane: "next",
+      why: "It stops the late-notification-then-fee moment and sends her into the overview each cycle." },
+    { id: 6,  name: "Weekly summary push", v: 4, e: 1, q: "quick", lane: "next",
+      why: "It is the cheapest way to build the weekly habit; tag these opens as prompted so the metric isn't gamed." },
+    // LATER
+    { id: 11, name: "Automatic payment under a threshold", v: 3, e: 4, q: "sink", lane: "later",
+      why: "First to promote if reminders don't cut fees paid, but it lowers her need to open the overview." },
+    { id: 14, name: "Returns: auto-adjust invoice and pause payment", v: 3, e: 4, q: "sink", lane: "later",
+      why: "Table stakes for BNPL users, but it needs merchant-side matching; show refund lines in the feed and use support meanwhile." },
+    { id: 9,  name: "Coarse MCC-based categories", v: 3, e: 2, q: "fill", lane: "later",
+      why: "Her pain is amounts and dates, not categories, and interviewees worried about wrong categorisation." },
+    { id: 8,  name: "Month-end CSV/PDF export", v: 2, e: 1, q: "fill", lane: "later",
+      why: "It automates her spreadsheet step but gives her a reason to leave the app; ship only on request." },
+    // CUT
+    { id: 7,  name: "Aggregate Klarna and PayPal obligations", v: 5, e: 5, q: "major", lane: "cut",
+      why: "It would fully solve the three-app problem, but Riverty has no access to competitor data, so it isn't buildable here." },
+    { id: 12, name: "Cashback", v: 3, e: 5, q: "sink", lane: "cut",
+      why: "Loved in interviews, but it needs a merchant network and funding 0.1% interchange can't cover, and it pulls spend away from checkout BNPL." },
+    { id: 13, name: "Open banking overview", v: 3, e: 5, q: "sink", lane: "cut",
+      why: "It adds consent and trust friction (half of interviewees wouldn't share) and won't show what she owes Klarna or PayPal." },
+    { id: 15, name: "Monthly consolidated invoice", v: 2, e: 4, q: "sink", lane: "cut",
+      why: "New invoice logic, and the Norstat survey found monthly invoicing the least preferred option." },
+    { id: 16, name: "Remaining credit limit display", v: 2, e: 4, q: "sink", lane: "cut",
+      why: "It needs the limit-management component the risk Q&A flags, and a financially stable persona isn't limit-constrained." },
+    { id: 17, name: "Spending limits and category budgets", v: 2, e: 4, q: "sink", lane: "cut",
+      why: "It needs enforcement at authorisation, and “I'm not broke” means she doesn't need guardrails on herself." },
+    { id: 18, name: "Apple/Google Pay provisioning (in-store)", v: 2, e: 4, q: "sink", lane: "cut",
+      why: "It addresses the in-store gap, not her month-end pain, and the risk Q&A recommends online-only first." },
+    { id: 19, name: "Physical card", v: 1, e: 4, q: "sink", lane: "cut",
+      why: "It is a backup feature, and two thirds of interviewees rejected the monthly fee." },
+    { id: 20, name: "Peer-to-peer transfers", v: 1, e: 5, q: "sink", lane: "cut",
+      why: "It needs wallet and licensing work and a coverage that doesn't exist, with no link to her reconciliation." },
+    { id: 21, name: "Consumer credit", v: 1, e: 5, q: "sink", lane: "cut",
+      why: "9 of 10 interviewees rejected it, and it adds regulatory work and revolving-debt risk for a user who isn't credit-driven." },
+    { id: 10, name: "Currency converter", v: 1, e: 2, q: "fill", lane: "cut",
+      why: "Nothing to do with month-end reconciliation; interviewees called it a gimmick and a nice-to-have." }
+  ];
+
+  var state = FEATURES.map(function (f) { return Object.assign({}, f); });
+  var filter = "all";
+  var dragId = null;
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  function cardHTML(f) {
+    var q = QUADS[f.q];
+    var opts = Object.keys(LANES).map(function (k) {
+      return '<option value="' + k + '"' + (k === f.lane ? " selected" : "") + ">" + LANES[k] + "</option>";
+    }).join("");
+    var dim = filter !== "all" && filter !== f.q ? " dim" : "";
+    return '<article class="card q-' + f.q + dim + '" draggable="true" data-id="' + f.id + '">' +
+      "<h3>" + esc(f.name) + "</h3>" +
+      "<p>" + esc(f.why) + "</p>" +
+      '<div class="card-foot">' +
+        "<div><span class=\"badge\">" + q.icon + q.label + '</span><span class="scores" title="Value / Effort">V' + f.v + " · E" + f.e + "</span></div>" +
+        '<label><span class="sr">Move ' + esc(f.name) + ' to</span><select class="move" data-id="' + f.id + '" aria-label="Move ' + esc(f.name) + ' to">' +
+          '<option value="" disabled>Move to…</option>' + opts + "</select></label>" +
+      "</div></article>";
+  }
+
+  function render() {
+    Object.keys(LANES).forEach(function (lane) {
+      var items = state.filter(function (f) { return f.lane === lane; });
+      var el = document.getElementById("lane-" + lane);
+      el.innerHTML = items.length
+        ? items.map(cardHTML).join("")
+        : '<div class="empty">' + (lane === "cut" ? "Nothing cut. Drag a card here to remove it from the pilot." : "Empty. Drag a card here or use a card's Move to menu.") + "</div>";
+      document.getElementById("count-" + lane).textContent = items.length;
+    });
+  }
+
+  function moveTo(id, lane) {
+    var f = state.filter(function (x) { return x.id === id; })[0];
+    if (!f || f.lane === lane) return;
+    f.lane = lane;
+    // keep the card at the end of its new lane
+    state = state.filter(function (x) { return x.id !== id; }).concat(f);
+    render();
+  }
+
+  // Events
+  document.addEventListener("change", function (e) {
+    if (e.target.classList.contains("move")) moveTo(Number(e.target.dataset.id), e.target.value);
+  });
+
+  document.addEventListener("dragstart", function (e) {
+    var c = e.target.closest && e.target.closest(".card");
+    if (!c) return;
+    dragId = Number(c.dataset.id);
+    c.classList.add("dragging");
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", String(dragId));
+  });
+  document.addEventListener("dragend", function () {
+    dragId = null;
+    document.querySelectorAll(".dragging").forEach(function (n) { n.classList.remove("dragging"); });
+    document.querySelectorAll(".over").forEach(function (n) { n.classList.remove("over"); });
+  });
+  document.querySelectorAll(".dropzone").forEach(function (zone) {
+    zone.addEventListener("dragover", function (e) { e.preventDefault(); zone.classList.add("over"); });
+    zone.addEventListener("dragleave", function (e) { if (!zone.contains(e.relatedTarget)) zone.classList.remove("over"); });
+    zone.addEventListener("drop", function (e) {
+      e.preventDefault();
+      zone.classList.remove("over");
+      var id = dragId !== null ? dragId : Number(e.dataTransfer.getData("text/plain"));
+      moveTo(id, zone.dataset.lane);
+    });
+  });
+
+  document.querySelectorAll(".chip").forEach(function (chip) {
+    chip.addEventListener("click", function () {
+      filter = chip.dataset.q;
+      document.querySelectorAll(".chip").forEach(function (c) { c.setAttribute("aria-pressed", String(c === chip)); });
+      render();
+    });
+  });
+
+  document.getElementById("reset").addEventListener("click", function () {
+    state = FEATURES.map(function (f) { return Object.assign({}, f); });
+    render();
+  });
+
+  document.getElementById("closeNote").addEventListener("click", function () {
+    document.getElementById("note").style.display = "none";
+  });
+
+  document.getElementById("copy").addEventListener("click", function () {
+    var btn = this;
+    var text = "Riverty card roadmap\n";
+    Object.keys(LANES).forEach(function (lane) {
+      text += "\n" + LANES[lane] + "\n";
+      var items = state.filter(function (f) { return f.lane === lane; });
+      if (!items.length) text += "- (none)\n";
+      items.forEach(function (f) { text += "- " + f.name + " [" + QUADS[f.q].label + ", V" + f.v + "/E" + f.e + "]: " + f.why + "\n"; });
+    });
+    function done(ok) { btn.textContent = ok ? "Copied" : "Copy failed"; setTimeout(function () { btn.textContent = "Copy as text"; }, 1600); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+    } else {
+      var ta = document.createElement("textarea");
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try { done(document.execCommand("copy")); } catch (err) { done(false); }
+      document.body.removeChild(ta);
+    }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
