@@ -1,14 +1,15 @@
-# PRD & Prototype Sprint
+# PRD & Prototype Sprint (Module 4)
 
-> **Module 4 · Lab 2.** Repo file `04-roadmap/prd-and-prototype.md` — part of your submission.
-> Do the lab in the **Module 4 · Exercise 2 Guide** (linked from the Module 4 deck), then click **⬇ Download .md** — it saves as this exact file. Commit it here.
-> It deepens the top feature from your `roadmap-prd-prototype.md` and feeds the **Roadmap, PRD & Prototype** slide of your Module 6 deck.
+## Pick & scope with MoSCoW
+- **The “Now” feature I’m scoping (name + one-line core description):** Riverty card, Riverty is the one place where a heavy BNPL user sees what she spent, what she owes Riverty and when it is due, so she keeps the control that made her choose BNPL.
+- **My finalized Must-Haves (after overriding the AI):** M1	Card overview screen: list of every card transaction (amount, date, merchant, status) with a month total
+M2	Near-real-time feed: authorisations appear as “pending” and move to “settled”
+M4	One due-date list: card invoices and Riverty Pay invoices in a single list sorted by due date, each with amount owed. Read-only, reusing existing invoice data
+- **What I demoted from Must → Should/Won’t, and why:** M3	Merchant name resolution: show the merchant, not the processor descriptor. Fall back to the raw descriptor, labelled as such. It is not preventing her to see the overview.
 
-## Responses
+## Generate your Simplified PRD
+- **One thing my PRD makes explicit that a vague brief would have missed:** A clear overview. Press release nailed it.
 
-- **The "Now" feature I'm scoping (name + one-line core description):** _(not filled in)_
-- **My finalized Must-Haves (after overriding the AI):** _(not filled in)_
-- **What I demoted from Must → Should/Won't, and why:** _(not filled in)_
-- **One thing my PRD makes explicit that a vague brief would have missed:** _(not filled in)_
-- **Where the prototype revealed a gap in my PRD logic (what I updated):** _(not filled in)_
-- **My shareable prototype URL:** _(not filled in)_
+## Prompt-to-prototype sprint
+- **Where did the prototype reveal a gap in my PRD logic? (what I had to update):** none
+- **My prototype, as a link or a screenshot (publish or share from your tool; in Lovable that is Share → Share Preview, in Bolt Publish → Web. No share URL? Screenshot the working flow):** riverty-card-roadmap.html
