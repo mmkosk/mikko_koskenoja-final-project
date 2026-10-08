@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Riverty card · Prototype</title>
+<style>
+  :root {
+    --bg: #e9e8e4;
+    --app: #f2f1ee;
+    --surface: #ffffff;
+    --ink: #262626;
+    --soft: #62625d;
+    --line: #dcdad4;
+    --green: #4d7a3e;
+    --green-deep: #34562a;
+    --green-tint: #e3efdc;
+    --amber: #7a5a00;
+    --amber-tint: #f6ebc8;
+    --red: #9a3320;
+    --red-tint: #f6dfd9;
+    --grey-tint: #e8e7e2;
+    --font: "Avenir Next", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
+
+  .stage { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 32px; padding: 28px 16px 48px; }
+
+  /* Phone */
+  .phone { width: 390px; height: 800px; border: 10px solid #1b1b1b; border-radius: 42px; background: var(--app); overflow: hidden; display: flex; flex-direction: column; position: relative; flex: none; }
+  .statusbar { height: 30px; flex: none; display: flex; justify-content: space-between; align-items: flex-end; padding: 0 22px 2px; font-size: 12px; font-weight: 700; }
+  .scroll { flex: 1; overflow-y: auto; padding: 8px 18px 18px; }
+  .cta-bar { flex: none; padding: 10px 18px; background: var(--app); border-top: 1px solid var(--line); }
+  .nav { flex: none; display: flex; border-top: 1px solid var(--line); background: var(--surface); }
+  .nav span { flex: 1; text-align: center; font-size: 11px; padding: 10px 0 12px; color: var(--soft); }
+  .nav span[aria-current="page"] { color: var(--green-deep); font-weight: 700; box-shadow: inset 0 3px 0 var(--green); }
+
+  h1 { font-size: 22px; margin: 6px 0 2px; letter-spacing: -0.01em; }
+  h2 { font-size: 15px; margin: 22px 0 8px; }
+  .lead { margin: 0 0 14px; color: var(--soft); font-size: 13px; }
+  .topbar { display: flex; align-items: center; gap: 8px; margin: 2px 0 6px; }
+  .back { border: 0; background: none; font-size: 22px; line-height: 1; cursor: pointer; padding: 6px 8px 6px 0; }
+
+  .btn { width: 100%; border: 0; border-radius: 8px; background: var(--ink); color: #fff; padding: 14px; font-size: 15px; font-weight: 700; cursor: pointer; }
+  .btn:hover { background: #000; }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--ink); }
+
+  /* Card visual */
+  .cardvis { background: linear-gradient(135deg, #5a8a49, #34562a); color: #fff; border-radius: 14px; padding: 16px 18px; height: 150px; position: relative; margin-bottom: 14px; }
+  .cardvis .logo { width: 22px; height: 22px; }
+  .cardvis .num { position: absolute; left: 18px; bottom: 16px; font-size: 15px; letter-spacing: 0.12em; }
+  .cardvis .mc { position: absolute; right: 18px; bottom: 14px; display: flex; }
+  .cardvis .mc i { width: 24px; height: 24px; border-radius: 50%; display: block; }
+  .cardvis .mc i:first-child { background: #e0201b; }
+  .cardvis .mc i:last-child { background: #f5a31a; margin-left: -9px; opacity: 0.95; }
+  .demo { position: absolute; right: 14px; top: 14px; font-size: 11px; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 99px; }
+
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tile { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px; }
+  .tile.wide { grid-column: 1 / -1; }
+  .tile .k { font-size: 12px; color: var(--soft); }
+  .tile .v { font-size: 22px; font-weight: 700; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .tile .s { font-size: 12px; color: var(--soft); margin-top: 2px; }
+  .tile.alert-overdue { border-color: var(--red); }
+  .tile.alert-soon { border-color: var(--amber); }
+
+  .chip { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: var(--grey-tint); color: var(--soft); margin-left: 6px; vertical-align: middle; }
+  .chip.soon { background: var(--amber-tint); color: var(--amber); }
+  .chip.today { background: var(--ink); color: #fff; }
+  .chip.over { background: var(--red-tint); color: var(--red); }
+  .chip.pending { background: var(--amber-tint); color: var(--amber); margin-left: 0; }
+  .chip.settled { background: var(--green-tint); color: var(--green-deep); margin-left: 0; }
+  .chip.unv { background: var(--grey-tint); color: var(--ink); border: 1px dashed var(--soft); margin-left: 0; }
+  .chip.ref { background: var(--green-tint); color: var(--green-deep); margin-left: 0; }
+  .chip.upd { background: var(--grey-tint); color: var(--soft); margin-left: 0; }
+
+  /* Segmented */
+  .seg { display: flex; background: var(--grey-tint); border-radius: 9px; padding: 3px; margin: 8px 0 12px; }
+  .seg button { flex: 1; border: 0; background: transparent; padding: 8px; border-radius: 7px; font-weight: 600; cursor: pointer; font-size: 14px; color: var(--soft); }
+  .seg button[aria-selected="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,0.15); }
+
+  .strip { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .strip .big { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .strip .small { font-size: 12px; color: var(--soft); text-align: right; }
+
+  .list { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .row { display: flex; width: 100%; justify-content: space-between; gap: 10px; align-items: flex-start; text-align: left; padding: 11px 14px; border: 0; border-bottom: 1px solid var(--line); background: transparent; cursor: pointer; }
+  .row:last-child { border-bottom: 0; }
+  .row .l { min-width: 0; flex: 1; }
+  .row .name { font-weight: 600; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .row .name.open { white-space: normal; word-break: break-all; }
+  .row .meta { font-size: 12px; color: var(--soft); margin-top: 3px; display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+  .row .raw { font-size: 12px; color: var(--soft); margin-top: 4px; word-break: break-all; }
+  .row .amt { font-weight: 700; font-size: 14px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .row .amt.neg { color: var(--green-deep); }
+  .row.dueplain { cursor: default; }
+
+  .filterbar { display: flex; justify-content: space-between; align-items: center; background: var(--grey-tint); border-radius: 8px; padding: 7px 10px; font-size: 13px; margin-bottom: 10px; }
+  .filterbar button { border: 0; background: none; text-decoration: underline; cursor: pointer; font-size: 13px; }
+
+  .msg { background: var(--surface); border: 1px dashed var(--soft); border-radius: 10px; padding: 18px; text-align: center; color: var(--soft); font-size: 14px; }
+  .msg.err { border: 1px solid var(--red); background: var(--red-tint); color: var(--ink); text-align: left; }
+  .msg.err b { display: block; margin-bottom: 4px; }
+  .msg .btn { margin-top: 12px; }
+
+  /* Screen 3 */
+  .done { text-align: center; padding-top: 14px; }
+  .done .tick { width: 64px; height: 64px; border-radius: 50%; background: var(--green); color: #fff; font-size: 34px; line-height: 64px; margin: 0 auto 10px; }
+  .done .tile { text-align: left; margin-top: 10px; }
+  .toggle { display: flex; justify-content: space-between; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; margin-top: 10px; text-align: left; font-size: 14px; }
+  .switch { width: 46px; height: 26px; border-radius: 99px; border: 0; background: #b7b6b0; position: relative; cursor: pointer; flex: none; }
+  .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: left 0.15s; }
+  .switch[aria-checked="true"] { background: var(--green); }
+  .switch[aria-checked="true"]::after { left: 23px; }
+  .stub { font-size: 12px; color: var(--soft); margin-top: 6px; text-align: left; }
+  .linkbtn { border: 0; background: none; text-decoration: underline; cursor: pointer; font-size: inherit; padding: 0; color: var(--ink); }
+
+  /* Control panel */
+  .panel { width: 420px; max-width: 100%; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+  .panel h2 { margin: 0 0 4px; font-size: 16px; }
+  .panel h3 { margin: 18px 0 6px; font-size: 13px; }
+  .panel p { margin: 0 0 8px; font-size: 13px; color: var(--soft); }
+  .pbtns { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pbtn { border: 1px solid var(--ink); background: transparent; border-radius: 6px; padding: 6px 10px; font-size: 13px; cursor: pointer; font-weight: 600; }
+  .pbtn:hover { background: var(--ink); color: #fff; }
+  .checks { list-style: none; margin: 0; padding: 0; font-size: 13px; }
+  .checks li { padding: 3px 0; display: flex; gap: 8px; }
+  .checks .ok { color: var(--green-deep); font-weight: 700; }
+  .checks .bad { color: var(--red); font-weight: 700; }
+  .log { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12px; background: #f6f5f2; border: 1px solid var(--line); border-radius: 8px; padding: 8px; max-height: 200px; overflow: auto; }
+  .log div { padding: 2px 0; border-bottom: 1px dotted var(--line); }
+  .log div:last-child { border-bottom: 0; }
+  .testout { margin-top: 8px; font-size: 13px; font-weight: 600; }
+
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  @media (max-width: 440px) {
+    .stage { padding: 0 0 24px; gap: 20px; }
+    .phone { width: 100%; height: 100dvh; border: 0; border-radius: 0; }
+    .panel { margin: 0 12px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="phone" id="phone" aria-label="Riverty card prototype"></div>
+
+  <aside class="panel" aria-label="Prototype controls">
+    <h2>Prototype controls</h2>
+    <p>Not part of the product. These stand in for card events so you can test the flow. Demo date: 29 Oct 2026. All data is made up and lives in memory only.</p>
+
+    <h3>Simulate card events</h3>
+    <div class="pbtns">
+      <button class="pbtn" data-act="sim-known">Purchase: known merchant</button>
+      <button class="pbtn" data-act="sim-unknown">Purchase: unknown merchant</button>
+      <button class="pbtn" data-act="sim-change">Purchase: amount changes</button>
+      <button class="pbtn" data-act="sim-refund">Refund</button>
+    </div>
+
+    <h3>Simulate app states</h3>
+    <div class="pbtns">
+      <button class="pbtn" data-act="sim-push">Open from weekly push</button>
+      <button class="pbtn" data-act="sim-fail">Feed failure</button>
+      <button class="pbtn" data-act="sim-empty">Empty month</button>
+      <button class="pbtn" data-act="reset">Reset demo data</button>
+    </div>
+
+    <h3>Live checks (same state as all 3 screens)</h3>
+    <ul class="checks" id="checks"></ul>
+
+    <h3>Safety check</h3>
+    <p>Runs 20 random event sequences against the data rules and checks the invariants.</p>
+    <div class="pbtns"><button class="pbtn" data-act="run-test">Run 20 sequences</button></div>
+    <div class="testout" id="testout" role="status"></div>
+
+    <h3>Event log (in memory)</h3>
+    <div class="log" id="log" aria-live="off"></div>
+  </aside>
+</div>
+<div class="sr" id="live" aria-live="polite"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- constants & helpers ---------- */
+  var TODAY = "2026-10-29";
+  var MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var ARRIVE_MS = 1000;   // FR2: pending appears within 2 s
+  var SETTLE_MS = 4000;   // FR2: settles within 5 s of appearing
+
+  // FR4: fixed merchant mapping. No mapping means no name. Names are never guessed.
+  var MAP = {
+    "ZALANDO SE BERLIN": "Zalando", "DB VERTRIEB GMBH": "Deutsche Bahn", "ALDI SUED 4471": "ALDI",
+    "H&M HENNES MAURITZ": "H&M", "IKEA DEUTSCHLAND": "IKEA", "MEDIAMARKT KOELN": "MediaMarkt",
+    "SPOTIFY AB": "Spotify", "LIDL SAGT DANKE 220": "Lidl", "DOUGLAS 0412": "Douglas",
+    "APPLE.COM/BILL": "Apple", "ROSSMANN 1873": "Rossmann", "LIEFERANDO.DE": "Lieferando",
+    "TANKSTELLE ARAL 3310": "Aral"
+  };
+
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function dt(iso) { return new Date(iso + "T00:00:00"); }
+  function diffDays(a, b) { return Math.round((dt(a) - dt(b)) / 86400000); }
+  function addDays(iso, n) { var x = dt(iso); x.setDate(x.getDate() + n); return x.getFullYear() + "-" + pad(x.getMonth() + 1) + "-" + pad(x.getDate()); }
+  function fmtDate(iso) { var x = dt(iso); return x.getDate() + " " + MONTHS[x.getMonth()]; }
+  function eur(c) {
+    var neg = c < 0, a = Math.abs(c);
+    return (neg ? "\u2212" : "") + "\u20AC" + (a / 100).toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function nameOf(tx) { return MAP[tx.descriptor] || null; }
+  function plural(n, w) { return n + " " + w + (n === 1 ? "" : "s"); }
+
+  /* ---------- seed data (synthetic) ---------- */
+  function seed() {
+    return {
+      nextId: 100,
+      txs: [
+        { id: 16, date: "2026-10-29", descriptor: "LIEFERANDO.DE",       cents: 2730, status: "pending", kind: "purchase" },
+        { id: 15, date: "2026-10-29", descriptor: "ZALANDO SE BERLIN",   cents: 7990, status: "pending", kind: "purchase" },
+        { id: 2,  date: "2026-10-28", descriptor: "DB VERTRIEB GMBH",    cents: 5490, status: "settled", kind: "purchase" },
+        { id: 3,  date: "2026-10-26", descriptor: "PAYTECH*7731 DUBLIN", cents: 1999, status: "settled", kind: "purchase" },
+        { id: 4,  date: "2026-10-24", descriptor: "ALDI SUED 4471",      cents: 4618, status: "settled", kind: "purchase" },
+        { id: 5,  date: "2026-10-22", descriptor: "H&M HENNES MAURITZ",  cents: 6495, status: "settled", kind: "purchase" },
+        { id: 6,  date: "2026-10-21", descriptor: "ZALANDO SE BERLIN",   cents: -3995, status: "settled", kind: "refund" },
+        { id: 7,  date: "2026-10-19", descriptor: "IKEA DEUTSCHLAND",    cents: 11200, status: "settled", kind: "purchase" },
+        { id: 8,  date: "2026-10-17", descriptor: "MEDIAMARKT KOELN",    cents: 24900, status: "settled", kind: "purchase" },
+        { id: 9,  date: "2026-10-15", descriptor: "SPOTIFY AB",          cents: 1099, status: "settled", kind: "purchase" },
+        { id: 10, date: "2026-10-14", descriptor: "SQ *KAFFEE KLATSCH",  cents: 1280, status: "settled", kind: "purchase" },
+        { id: 11, date: "2026-10-12", descriptor: "LIDL SAGT DANKE 220", cents: 3127, status: "settled", kind: "purchase" },
+        { id: 12, date: "2026-10-09", descriptor: "DOUGLAS 0412",        cents: 5840, status: "settled", kind: "purchase" },
+        { id: 13, date: "2026-10-07", descriptor: "APPLE.COM/BILL",      cents: 299,  status: "settled", kind: "purchase" },
+        { id: 14, date: "2026-10-04", descriptor: "CKO*GLOBALSHOP 4412", cents: 3750, status: "settled", kind: "purchase" },
+        { id: 1,  date: "2026-10-02", descriptor: "ROSSMANN 1873",       cents: 1785, status: "settled", kind: "purchase" }
+      ],
+      invoices: [
+        { id: "i1", source: "Riverty Pay", name: "Otto",              cents: 12900, due: "2026-10-27" },
+        { id: "i2", source: "Riverty Pay", name: "Zalando",           cents: 8690,  due: "2026-10-29" },
+        { id: "i3", source: "Card",        name: "MediaMarkt",        cents: 24900, due: "2026-10-31" },
+        { id: "i4", source: "Card",        name: "IKEA",              cents: 11200, due: "2026-11-02" },
+        { id: "i5", source: "Riverty Pay", name: "About You",         cents: 5400,  due: "2026-11-03" },
+        { id: "i6", source: "Card",        name: "H&M",               cents: 6495,  due: "2026-11-05" },
+        { id: "i7", source: "Card",        name: "Deutsche Bahn",     cents: 5490,  due: "2026-11-11" },
+        { id: "i8", source: "Riverty Pay", name: "notebooksbilliger", cents: 41200, due: "2026-11-12" }
+      ]
+    };
+  }
+
+  /* ---------- pure data rules (used by the UI and by the safety check) ---------- */
+  function sortedTxs(s) {
+    return s.txs.slice().sort(function (a, b) { return a.date < b.date ? 1 : a.date > b.date ? -1 : b.id - a.id; });
+  }
+  function sortedInvoices(s) {
+    return s.invoices.slice().sort(function (a, b) { return a.due < b.due ? -1 : a.due > b.due ? 1 : 0; });
+  }
+  function monthTotal(s) { return s.txs.reduce(function (t, x) { return t + x.cents; }, 0); }
+  function pendingTotal(s) { return s.txs.reduce(function (t, x) { return t + (x.status === "pending" && x.kind === "purchase" ? x.cents : 0); }, 0); }
+  function owedTotal(s) { return s.invoices.reduce(function (t, x) { return t + x.cents; }, 0); }
+  function unverifiedCount(s) { return s.txs.filter(function (x) { return !nameOf(x); }).length; }
+  function dueInfo(due) {
+    var n = diffDays(due, TODAY);
+    if (n < 0) return { cls: "over", text: "Overdue " + plural(-n, "day"), level: "overdue" };
+    if (n === 0) return { cls: "today", text: "Due today", level: "today" };
+    if (n <= 3) return { cls: "soon", text: "Due in " + plural(n, "day"), level: "soon" };
+    return null;
+  }
+  function addAuthorisation(s, descriptor, cents, kind) {
+    var tx = { id: s.nextId++, date: TODAY, descriptor: descriptor, cents: cents, status: kind === "refund" ? "settled" : "pending", kind: kind };
+    s.txs.push(tx);
+    return tx;
+  }
+  function settle(s, id, finalCents) {
+    var tx = s.txs.filter(function (x) { return x.id === id; })[0];
+    if (!tx || tx.status === "settled") return null;
+    if (typeof finalCents === "number" && finalCents !== tx.cents) { tx.cents = finalCents; tx.updated = true; }
+    tx.status = "settled";
+    if (tx.kind === "purchase") {
+      s.invoices.push({ id: "i" + tx.id, source: "Card", name: nameOf(tx) || tx.descriptor, cents: tx.cents, due: addDays(TODAY, 14), txId: tx.id });
+    }
+    return tx;
+  }
+
+  /* ---------- state (single source of truth, setState re-renders) ---------- */
+  var data = seed();
+  var ui = { screen: 1, tab: "tx", onlyUnverified: false, expanded: null, remind: false, failure: false, empty: false, events: [], simIndex: { known: 0, unknown: 0, refund: 0 }, epoch: 0, testOut: "" };
+
+  function setState(patch) { Object.keys(patch).forEach(function (k) { ui[k] = patch[k]; }); render(); }
+  function log(name, meta) {
+    var t = new Date();
+    ui.events.unshift(pad(t.getHours()) + ":" + pad(t.getMinutes()) + ":" + pad(t.getSeconds()) + "  " + name + (meta ? "  " + meta : ""));
+    if (ui.events.length > 60) ui.events.length = 60;
+  }
+
+  /* ---------- screens ---------- */
+  function txRow(x) {
+    var nm = nameOf(x);
+    var open = ui.expanded === x.id;
+    var chips = '<span class="chip ' + x.status + '">' + (x.status === "pending" ? "Pending" : "Settled") + "</span>";
+    if (x.kind === "refund") chips += '<span class="chip ref">Refund</span>';
+    if (!nm) chips += '<span class="chip unv">Unverified name</span>';
+    if (x.updated) chips += '<span class="chip upd">Amount updated</span>';
+    return '<button class="row" data-act="expand" data-id="' + x.id + '" aria-expanded="' + open + '">' +
+      '<div class="l"><div class="name' + (open ? " open" : "") + '">' + esc(nm || x.descriptor) + "</div>" +
+      '<div class="meta"><span>' + fmtDate(x.date) + "</span>" + chips + "</div>" +
+      (open ? '<div class="raw">Statement text: ' + esc(x.descriptor) + (x.kind === "refund" ? ". The invoice amount is not adjusted automatically." : "") + "</div>" : "") +
+      '</div><div class="amt' + (x.cents < 0 ? " neg" : "") + '">' + eur(x.cents) + "</div></button>";
+  }
+
+  function dueRow(inv) {
+    var info = dueInfo(inv.due);
+    return '<div class="row dueplain"><div class="l"><div class="name">' + esc(inv.name) + '</div>' +
+      '<div class="meta"><span>' + esc(inv.source) + " invoice</span><span>Due " + fmtDate(inv.due) + "</span>" +
+      (info ? '<span class="chip ' + info.cls + '" style="margin-left:0">' + info.text + "</span>" : "") +
+      '</div></div><div class="amt">' + eur(inv.cents) + "</div></div>";
+  }
+
+  function errorBlock() {
+    return '<div class="msg err" role="alert"><b>We couldn\u2019t load your card activity.</b>Your totals are hidden because showing \u20AC0,00 would be wrong. Check your connection and try again.' +
+      '<button class="btn" data-act="retry">Try again</button></div>';
+  }
+
+  function screen1() {
+    if (ui.failure) {
+      return '<div class="scroll"><h1>Riverty card</h1>' + errorBlock() + "</div>";
+    }
+    var pend = pendingTotal(data);
+    var invs = sortedInvoices(data);
+    var next = invs[0];
+    var info = next ? dueInfo(next.due) : null;
+    var tiles =
+      '<div class="tiles">' +
+      '<div class="tile"><div class="k">Spent this month</div><div class="v">' + eur(monthTotal(data)) + '</div><div class="s">' + (pend > 0 ? "incl. " + eur(pend) + " pending" : "All settled") + "</div></div>" +
+      '<div class="tile"><div class="k">You owe Riverty</div><div class="v">' + eur(owedTotal(data)) + '</div><div class="s">' + (invs.length ? plural(invs.length, "open invoice") : "Nothing owed") + "</div></div>" +
+      '<div class="tile wide' + (info ? (info.level === "overdue" ? " alert-overdue" : " alert-soon") : "") + '"><div class="k">Next due</div>' +
+      (next ? '<div class="v">' + fmtDate(next.due) + " \u00B7 " + eur(next.cents) + (info ? '<span class="chip ' + info.cls + '">' + info.text + "</span>" : "") + '</div><div class="s">' + esc(next.name) + " (" + esc(next.source) + ")</div>"
+            : '<div class="v">Nothing due</div>') +
+      "</div></div>";
+    var last3 = sortedTxs(data).slice(0, 3);
+    var recent = last3.length
+      ? '<div class="list">' + last3.map(function (x) {
+          var nm = nameOf(x) || x.descriptor;
+          return '<div class="row dueplain"><div class="l"><div class="name">' + esc(nm) + '</div><div class="meta"><span>' + fmtDate(x.date) + '</span><span class="chip ' + x.status + '">' + (x.status === "pending" ? "Pending" : "Settled") + "</span></div></div><div class=\"amt" + (x.cents < 0 ? " neg" : "") + '">' + eur(x.cents) + "</div></div>";
+        }).join("") + "</div>"
+      : '<div class="msg">No card purchases yet this month.</div>';
+    return '<div class="scroll">' +
+      '<h1>Riverty card</h1><p class="lead">Everything you owe Riverty, in one place.</p>' +
+      '<div class="cardvis"><svg class="logo" viewBox="0 0 34 34" aria-hidden="true"><path d="M2 2h30v8H10v22H2z" fill="#fff"/></svg><span class="demo">Demo data</span><div class="num">\u2022\u2022\u2022\u2022 5623</div><div class="mc"><i></i><i></i></div></div>' +
+      tiles + "<h2>Latest activity</h2>" + recent + "</div>" +
+      '<div class="cta-bar"><button class="btn" data-act="review">Review this month</button></div>';
+  }
+
+  function screen2() {
+    var head = '<div class="topbar"><button class="back" data-act="home" aria-label="Back to Card home">\u2039</button><h1 style="margin:0">Overview</h1></div>' +
+      '<div class="seg" role="tablist"><button role="tab" data-act="tab-tx" aria-selected="' + (ui.tab === "tx") + '">Transactions</button><button role="tab" data-act="tab-due" aria-selected="' + (ui.tab === "due") + '">Due dates</button></div>';
+    if (ui.failure) return '<div class="scroll">' + head + errorBlock() + "</div>";
+
+    var body;
+    if (ui.tab === "tx") {
+      var rows = sortedTxs(data);
+      var shown = ui.onlyUnverified ? rows.filter(function (x) { return !nameOf(x); }) : rows;
+      var pend = pendingTotal(data);
+      body = '<div class="strip"><div><div class="small" style="text-align:left">Month total</div><div class="big">' + eur(monthTotal(data)) + '</div></div><div class="small">' + plural(rows.length, "transaction") + (pend > 0 ? "<br>incl. " + eur(pend) + " pending" : "") + "</div></div>" +
+        (ui.onlyUnverified ? '<div class="filterbar"><span>Showing ' + shown.length + ' unverified</span><button data-act="clear-filter">Show all</button></div>' : "") +
+        (shown.length ? '<div class="list">' + shown.map(txRow).join("") + "</div>" : '<div class="msg">No card purchases yet this month.</div>');
+    } else {
+      var invs = sortedInvoices(data);
+      body = '<div class="strip"><div><div class="small" style="text-align:left">Total owed</div><div class="big">' + eur(owedTotal(data)) + '</div></div><div class="small">' + plural(invs.length, "invoice") + "<br>sorted by due date</div></div>" +
+        (invs.length ? '<div class="list">' + invs.map(dueRow).join("") + "</div>" : '<div class="msg">Nothing due.</div>');
+    }
+    return '<div class="scroll">' + head + body + "</div>" +
+      '<div class="cta-bar"><button class="btn" data-act="finish">Finish month-end check</button></div>';
+  }
+
+  function screen3() {
+    var invs = sortedInvoices(data), next = invs[0], info = next ? dueInfo(next.due) : null;
+    var unv = unverifiedCount(data);
+    return '<div class="scroll"><div class="done"><div class="tick" aria-hidden="true">\u2713</div>' +
+      "<h1>Everything Riverty is in one place</h1>" +
+      '<p class="lead">That\u2019s your Riverty month. Klarna and PayPal stay in their own apps.</p>' +
+      '<div class="tile"><div class="k">You owe Riverty</div><div class="v">' + (invs.length ? eur(owedTotal(data)) : "Nothing owed") + '</div></div>' +
+      '<div class="tile"><div class="k">Next due date</div><div class="v">' + (next ? fmtDate(next.due) + " \u00B7 " + eur(next.cents) : "Nothing due") + (info ? '<span class="chip ' + info.cls + '">' + info.text + "</span>" : "") + "</div>" + (next ? '<div class="s">' + esc(next.name) + "</div>" : "") + "</div>" +
+      '<div class="tile"><div class="k">Reviewed</div><div class="v">' + plural(data.txs.length, "transaction") + "</div>" +
+      '<div class="s">' + (unv > 0 ? plural(unv, "merchant name") + ' not verified. <button class="linkbtn" data-act="show-unverified">Show them</button>' : "All merchant names verified") + "</div></div>" +
+      '<div class="toggle"><span id="rl">Remind me before due dates</span><button class="switch" role="switch" aria-checked="' + ui.remind + '" aria-labelledby="rl" data-act="toggle-remind"></button></div>' +
+      (ui.remind ? '<div class="stub" role="status">Reminders set: 3 days, 1 day, on due date. Demo only, nothing is sent.</div>' : "") +
+      "</div></div>" +
+      '<div class="cta-bar"><button class="btn" data-act="home">Back to Card home</button></div>';
+  }
+
+  function render() {
+    var phone = document.getElementById("phone");
+    var prev = phone.querySelector(".scroll");
+    var keep = prev ? prev.scrollTop : 0;
+    var sig = ui.screen + ":" + ui.tab;
+    var html = '<div class="statusbar"><span>9:41</span><span>Demo \u00B7 29 Oct</span></div>' + (ui.screen === 1 ? screen1() : ui.screen === 2 ? screen2() : screen3()) +
+      '<nav class="nav" aria-label="App sections"><span>To do</span><span>All</span><span aria-current="page">Card</span><span>Flex</span><span>Profile</span></nav>';
+    phone.innerHTML = html;
+    var sc = phone.querySelector(".scroll");
+    if (sc && render.sig === sig) sc.scrollTop = keep;
+    render.sig = sig;
+    renderPanel();
+  }
+
+  /* ---------- panel: live checks + log ---------- */
+  function invariants(s) {
+    var rows = sortedTxs(s), invs = sortedInvoices(s);
+    var sumRows = rows.reduce(function (t, x) { return t + x.cents; }, 0);
+    var sumInv = invs.reduce(function (t, x) { return t + x.cents; }, 0);
+    var sorted = invs.every(function (x, i) { return i === 0 || invs[i - 1].due <= x.due; });
+    var named = s.txs.every(function (x) { return (nameOf(x) || x.descriptor).length > 0; });
+    var guessed = s.txs.filter(function (x) { var shown = nameOf(x) || x.descriptor; return !MAP[x.descriptor] && shown !== x.descriptor; }).length;
+    var pendingInvoiced = s.txs.filter(function (x) { return x.status === "pending" && s.invoices.some(function (i) { return i.txId === x.id; }); }).length;
+    return [
+      { ok: sumRows === monthTotal(s), t: "Month total equals the sum of listed rows (FR1)" },
+      { ok: named, t: "Every row shows a name (FR4)" },
+      { ok: guessed === 0, t: "0 guessed merchant names (FR4)" },
+      { ok: sorted, t: "Due dates sorted ascending (FR5)" },
+      { ok: sumInv === owedTotal(s), t: "Total owed equals the sum of listed invoices" },
+      { ok: pendingInvoiced === 0, t: "Pending purchases are not invoiced yet" }
+    ];
+  }
+  function renderPanel() {
+    document.getElementById("checks").innerHTML = invariants(data).map(function (c) {
+      return "<li><span class=\"" + (c.ok ? "ok" : "bad") + '">' + (c.ok ? "\u2713" : "\u2717") + "</span><span>" + c.t + "</span></li>";
+    }).join("");
+    document.getElementById("log").innerHTML = ui.events.length ? ui.events.map(function (e) { return "<div>" + esc(e) + "</div>"; }).join("") : "<div>No events yet.</div>";
+    document.getElementById("testout").textContent = ui.testOut;
+  }
+
+  /* ---------- simulation (FR2 timing) ---------- */
+  var KNOWN = [["LIDL SAGT DANKE 220", 2845], ["ROSSMANN 1873", 1990], ["DOUGLAS 0412", 4350], ["LIEFERANDO.DE", 2680]];
+  var UNKNOWN = [["PAYTECH*2290 DUBLIN", 3490], ["CKO*GLOBALSHOP 8120", 5920], ["SQ *CAFE NORD", 840]];
+  var REFUNDS = [["IKEA DEUTSCHLAND", -2400], ["H&M HENNES MAURITZ", -3495], ["MEDIAMARKT KOELN", -4999]];
+
+  function announce(msg) { document.getElementById("live").textContent = msg; }
+
+  function simulate(descriptor, cents, finalCents) {
+    var epoch = ui.epoch;
+    announce("Authorisation on its way.");
+    setTimeout(function () {
+      if (epoch !== ui.epoch) return;
+      var tx = addAuthorisation(data, descriptor, cents, "purchase");
+      log("purchase_authorised", (nameOf(tx) || tx.descriptor) + " " + eur(cents));
+      announce("New pending purchase: " + (nameOf(tx) || tx.descriptor) + ", " + eur(cents));
+      render();
+      setTimeout(function () {
+        if (epoch !== ui.epoch) return;
+        settle(data, tx.id, finalCents);
+        log("purchase_settled", (nameOf(tx) || tx.descriptor) + " " + eur(tx.cents) + (tx.updated ? " (amount updated)" : ""));
+        render();
+      }, SETTLE_MS);
+    }, ARRIVE_MS);
+  }
+  function simulateRefund() {
+    var p = REFUNDS[ui.simIndex.refund++ % REFUNDS.length];
+    var epoch = ui.epoch;
+    setTimeout(function () {
+      if (epoch !== ui.epoch) return;
+      var tx = addAuthorisation(data, p[0], p[1], "refund");
+      log("refund_received", (nameOf(tx) || tx.descriptor) + " " + eur(tx.cents));
+      announce("Refund received: " + (nameOf(tx) || tx.descriptor));
+      render();
+    }, ARRIVE_MS);
+  }
+
+  /* ---------- safety check (E3 style) ---------- */
+  function runSafety() {
+    var pass = 0, guessed = 0, mismatch = 0, i, j;
+    function rnd(n) { return Math.floor(Math.random() * n); }
+    for (i = 0; i < 20; i++) {
+      var s = seed();
+      for (j = 0; j < 12; j++) {
+        var r = rnd(5), p, tx;
+        if (r === 0) { p = KNOWN[rnd(KNOWN.length)]; tx = addAuthorisation(s, p[0], p[1], "purchase"); if (rnd(2)) settle(s, tx.id); }
+        else if (r === 1) { p = UNKNOWN[rnd(UNKNOWN.length)]; tx = addAuthorisation(s, p[0], p[1], "purchase"); if (rnd(2)) settle(s, tx.id); }
+        else if (r === 2) { tx = addAuthorisation(s, "TANKSTELLE ARAL 3310", 6000, "purchase"); if (rnd(2)) settle(s, tx.id, 5218); }
+        else if (r === 3) { p = REFUNDS[rnd(REFUNDS.length)]; addAuthorisation(s, p[0], p[1], "refund"); }
+        else { var pend = s.txs.filter(function (x) { return x.status === "pending"; }); if (pend.length) settle(s, pend[rnd(pend.length)].id); }
+      }
+      var res = invariants(s);
+      var bad = res.filter(function (c) { return !c.ok; });
+      if (!bad.length) pass++;
+      bad.forEach(function (c) { if (c.t.indexOf("guessed") > -1) guessed++; else mismatch++; });
+    }
+    ui.testOut = pass + "/20 sequences passed \u00B7 " + guessed + " guessed names \u00B7 " + mismatch + " total mismatches";
+    log("safety_check", ui.testOut);
+    render();
+  }
+
+  /* ---------- actions ---------- */
+  var actions = {
+    review: function () { log("overview_opened", "source=organic"); setState({ screen: 2, tab: "tx", onlyUnverified: false, expanded: null }); },
+    home: function () { setState({ screen: 1 }); },
+    "tab-tx": function () { setState({ tab: "tx" }); },
+    "tab-due": function () { setState({ tab: "due" }); },
+    finish: function () { log("check_finished", "reviewed=" + data.txs.length + " unverified=" + unverifiedCount(data)); setState({ screen: 3 }); },
+    "show-unverified": function () { log("overview_opened", "source=organic"); setState({ screen: 2, tab: "tx", onlyUnverified: true, expanded: null }); },
+    "clear-filter": function () { setState({ onlyUnverified: false }); },
+    "toggle-remind": function () { setState({ remind: !ui.remind }); if (ui.remind) log("reminders_toggled", "on (stub)"); },
+    expand: function (el) { var id = Number(el.dataset.id); setState({ expanded: ui.expanded === id ? null : id }); },
+    retry: function () { log("feed_retry"); setState({ failure: false }); },
+    "sim-known": function () { var p = KNOWN[ui.simIndex.known++ % KNOWN.length]; simulate(p[0], p[1]); },
+    "sim-unknown": function () { var p = UNKNOWN[ui.simIndex.unknown++ % UNKNOWN.length]; simulate(p[0], p[1]); },
+    "sim-change": function () { simulate("TANKSTELLE ARAL 3310", 6000, 5218); },
+    "sim-refund": function () { simulateRefund(); },
+    "sim-push": function () { log("overview_opened", "source=prompted"); setState({ screen: 2, tab: "tx", onlyUnverified: false, expanded: null }); },
+    "sim-fail": function () { log("feed_failure_simulated"); setState({ failure: true }); },
+    "sim-empty": function () { ui.epoch++; data = { nextId: 100, txs: [], invoices: [] }; log("empty_month_loaded"); setState({ screen: 1, failure: false, onlyUnverified: false, expanded: null }); },
+    reset: function () { ui.epoch++; data = seed(); ui.events = []; ui.testOut = ""; setState({ screen: 1, tab: "tx", failure: false, onlyUnverified: false, expanded: null, remind: false, simIndex: { known: 0, unknown: 0, refund: 0 } }); },
+    "run-test": function () { runSafety(); }
+  };
+
+  document.addEventListener("click", function (e) {
+    var el = e.target.closest("[data-act]");
+    if (!el) return;
+    var fn = actions[el.dataset.act];
+    if (fn) fn(el);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
